@@ -26,7 +26,7 @@ def test_full():
     bucket_etype = "test"
 
     # Test context manager
-    with ActivityWatchClient(client_name, testing=True) as client:
+    with ActivityWatchClient("salam",client_name, testing=True) as client:
         time.sleep(1)
 
         # Check that client name is set correctly

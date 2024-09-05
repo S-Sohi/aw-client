@@ -61,11 +61,12 @@ def always_raise_for_request_errors(f: Callable[..., req.Response]):
 class ActivityWatchClient:
     def __init__(
         self,
+        token,
         client_name: str = "unknown",
         testing=False,
         host=None,
         port=None,
-        protocol="http",
+        protocol="http"
     ) -> None:
         """
         A handy wrapper around the aw-server REST API. The recommended way of interacting with the server.
@@ -78,7 +79,7 @@ class ActivityWatchClient:
             :lines: 7-
         """
         self.testing = testing
-
+        self.token = f'Bearer {token}'
         self.client_name = client_name
         self.client_hostname = socket.gethostname()
 
@@ -111,7 +112,9 @@ class ActivityWatchClient:
 
     @always_raise_for_request_errors
     def _get(self, endpoint: str, params: Optional[dict] = None) -> req.Response:
-        return req.get(self._url(endpoint), params=params)
+        headers = {}
+        headers['Authorization'] = self.token
+        return req.get(self._url(endpoint), params=params, headers=headers)
 
     @always_raise_for_request_errors
     def _post(
@@ -120,7 +123,7 @@ class ActivityWatchClient:
         data: Union[List[Any], Dict[str, Any]],
         params: Optional[dict] = None,
     ) -> req.Response:
-        headers = {"Content-type": "application/json", "charset": "utf-8"}
+        headers = {"Content-type": "application/json", "charset": "utf-8", 'Authorization':self.token}
         return req.post(
             self._url(endpoint),
             data=bytes(json.dumps(data), "utf8"),
@@ -130,7 +133,7 @@ class ActivityWatchClient:
 
     @always_raise_for_request_errors
     def _delete(self, endpoint: str, data: Any = dict()) -> req.Response:
-        headers = {"Content-type": "application/json"}
+        headers = {"Content-type": "application/json", 'Authorization':self.token}
         return req.delete(self._url(endpoint), data=json.dumps(data), headers=headers)
 
     def get_info(self):

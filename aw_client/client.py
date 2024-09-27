@@ -274,13 +274,11 @@ class ActivityWatchClient:
         if queued:
             self.request_queue.register_bucket(bucket_id, event_type)
         else:
-            endpoint = f"buckets/{bucket_id}"
+            endpoint = "buckets/"
             data = {
-                "client": self.client_name,
-                "hostname": self.client_hostname,
                 "type": event_type,
             }
-            self._post(endpoint, data)
+            return self._post(endpoint, data).json()
 
     def delete_bucket(self, bucket_id: str, force: bool = False):
         self._delete(f"buckets/{bucket_id}" + ("?force=1" if force else ""))
